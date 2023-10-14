@@ -11,11 +11,11 @@ import java.util.Random;
 import javax.swing.*;
 
 public class Demineur {
-    private class MineTab extends JButton {
+    private class MineBtn extends JButton {
         int r;
         int c;
 
-        public MineTab(int r, int c) {
+        public MineBtn(int r, int c) {
             this.r = r;
             this.c = c;
         }
@@ -33,8 +33,8 @@ public class Demineur {
     JPanel boardPanel = new JPanel();
 
     int mineCount = 10;
-    MineTab[][] board = new MineTab[numRows][numCols];
-    ArrayList<MineTab> mineList;
+    MineBtn[][] board = new MineBtn[numRows][numCols];
+    ArrayList<MineBtn> mineList;
     Random random = new Random();
 
     int tilesClicked = 0; //goal is to click all tiles except the ones containing mines
@@ -58,12 +58,11 @@ public class Demineur {
         frame.add(textPanel, BorderLayout.NORTH);
 
         boardPanel.setLayout(new GridLayout(numRows, numCols)); //8x8
-        // boardPanel.setBackground(Color.green);
         frame.add(boardPanel);
 
         for (int r = 0; r < numRows; r++) {
             for (int c = 0; c < numCols; c++) {
-                MineTab tile = new MineTab(r, c);
+                MineBtn tile = new MineBtn(r, c);
                 board[r][c] = tile;
 
                 tile.setFocusable(false);
@@ -76,7 +75,7 @@ public class Demineur {
                         if (gameOver) {
                             return;
                         }
-                        MineTab tile = (MineTab) e.getSource();
+                        MineBtn tile = (MineBtn) e.getSource();
 
                         //left click
                         if (e.getButton() == MouseEvent.BUTTON1) {
@@ -112,19 +111,13 @@ public class Demineur {
     }
 
     void setMines() {
-        mineList = new ArrayList<MineTab>();
-
-        // mineList.add(board[2][2]);
-        // mineList.add(board[2][3]);
-        // mineList.add(board[5][6]);
-        // mineList.add(board[3][4]);
-        // mineList.add(board[1][1]);
+        mineList = new ArrayList<MineBtn>();
         int mineGauche = mineCount;
         while (mineGauche > 0) {
             int r = random.nextInt(numRows); //0-7
             int c = random.nextInt(numCols);
 
-            MineTab tile = board[r][c]; 
+            MineBtn tile = board[r][c]; 
             if (!mineList.contains(tile)) {
                 mineList.add(tile);
                 mineGauche -= 1;
@@ -134,12 +127,12 @@ public class Demineur {
 
     void revelerMines() {
         for (int i = 0; i < mineList.size(); i++) {
-            MineTab tile = mineList.get(i);
+            MineBtn tile = mineList.get(i);
             tile.setText("💣");
         }
 
         gameOver = true;
-        textLabel.setText("Game Over :( ");
+        textLabel.setText("Game Over 😢 ");
     }
 
     void testMine(int r, int c) {
@@ -147,7 +140,7 @@ public class Demineur {
             return;
         }
 
-        MineTab tile = board[r][c];
+        MineBtn tile = board[r][c];
         if (!tile.isEnabled()) {
             return;
         }
@@ -157,18 +150,18 @@ public class Demineur {
         int minesExsist = 0;
 
         //top 3
-        minesExsist += nbrMine(r-1, c-1);  //top left
-        minesExsist += nbrMine(r-1, c);    //top
-        minesExsist += nbrMine(r-1, c+1);  //top right
+        minesExsist += ChercheMine(r-1, c-1);  //top left
+        minesExsist += ChercheMine(r-1, c);    //top
+        minesExsist += ChercheMine(r-1, c+1);  //top right
 
         //left and right
-        minesExsist += nbrMine(r, c-1);    //left
-        minesExsist += nbrMine(r, c+1);    //right
+        minesExsist += ChercheMine(r, c-1);    //left
+        minesExsist += ChercheMine(r, c+1);    //right
 
         //bottom 3
-        minesExsist += nbrMine(r+1, c-1);  //bottom left
-        minesExsist += nbrMine(r+1, c);    //bottom
-        minesExsist += nbrMine(r+1, c+1);  //bottom right
+        minesExsist += ChercheMine(r+1, c-1);  //bottom left
+        minesExsist += ChercheMine(r+1, c);    //bottom
+        minesExsist += ChercheMine(r+1, c+1);  //bottom right
 
         if (minesExsist > 0) {
             tile.setText(Integer.toString(minesExsist));
@@ -193,11 +186,11 @@ public class Demineur {
 
         if (tilesClicked == numRows * numCols - mineList.size()) {
             gameOver = true;
-            textLabel.setText("Mines Cleared!");
+            textLabel.setText("Gagner 😍!");
         }
     }
 
-    int nbrMine(int r, int c) {
+    int ChercheMine(int r, int c) {
         if (r < 0 || r >= numRows || c < 0 || c >= numCols) {
             return 0;
         }
